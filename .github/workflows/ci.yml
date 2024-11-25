@@ -1,0 +1,52 @@
+name: CI/CD Pipeline
+
+  on:
+    push:
+      branches:
+        - main
+    pull_request:
+      branches:
+        - main
+  
+  jobs:
+    test:
+      runs-on: ubuntu-latest
+  
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+  
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '16'
+  
+        - name: Install dependencies
+          run: npm install
+  
+        - name: Run tests
+          run: npm test
+    
+    build:
+  needs: test  # Ensure the tests pass first
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Archive production files
+      run: zip -r build.zip build/
+      # Saves build.zip to transfer to CPanel
+
